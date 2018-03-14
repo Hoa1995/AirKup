@@ -1,11 +1,10 @@
-var expressJwt = require('express-jwt');
 var jwt = require('jsonwebtoken');
 module.exports = function(app, passport, SERVER_SECRET) {
 
 
 // =========== authenticate login info and generate access token ===============
 
-    app.post('/login', function(req, res, next) {
+    app.post('/api/login', function(req, res, next) {
         passport.authenticate('local-login', function(err, user, info) {
             if (err) { return next(err); }
             // stop if it fails
@@ -49,48 +48,20 @@ module.exports = function(app, passport, SERVER_SECRET) {
 
 // ==================== Allows users to create accounts ========================
 
-    app.post('/signup', passport.authenticate('local-signup', {
-        successRedirect : '/signup/successjson',
-        failureRedirect : '/signup/failurejson',
+    app.post('/api/signup', passport.authenticate('local-signup', {
+        successRedirect : '/api/signup/successjson',
+        failureRedirect : '/api/signup/failurejson',
         failureFlash : true
     }));
     // return messages for signup users
-    app.get('/signup/successjson', function(req, res) {
-        res.json({ message: 'Successfully created user' });
+    app.get('/api/signup/successjson', function(req, res) {
+        res.status(200).json({ message: 'Đã tạo tài khoản thành công' });
     });
 
-    app.get('/signup/failurejson', function(req, res) {
-        res.json({ message: 'This user already exists' });
+    app.get('/api/signup/failurejson', function(req, res) {
+        res.json({ message: 'Email hoặc Password đã tồn tại' });
     });
-
-// =============================================================================
-
-// ================= Protected APIs for authenticated Users ====================
-    app.use( expressJwt({
-        secret : SERVER_SECRET
-    }).unless({
-        path:[
-            '/me'
-
-        ]}
-    ));
-    app.use(function (err, req, res, next) {
-        if (err.name === 'UnauthorizedError') {
-            return res.status(403).send({
-                success: false,
-                message: 'No token provided.'
-            });
-        }
+    app.get('/api/logout', function(req, res) {
+        res.status(200).send({ auth: false, token: null });
     });
-
-
-
-    app.get('/me' ,function(req, res) {
-        if(req.isAuthenticated()) {
-            res.json({user: req.user});
-        }else {
-            res.json({message: 'No ton tai user nay;'});
-        }
-    });
-
 }

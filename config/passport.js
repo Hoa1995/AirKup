@@ -6,7 +6,7 @@ var users = require('../model/user');
 
 module.exports = function(passport) {
     // required for persistent login sessions
-    // passport needs ability to serialize and unserialize users out of session
+    // passport needs ability to serialize and unserialize users out of ses1sion
 
     // used to serialize the user for the session
     passport.serializeUser(function(user, done) {
@@ -35,25 +35,29 @@ module.exports = function(passport) {
 
                 // find a user whose email is the same as the forms email
                 // we are checking to see if the user trying to login already exists
-                users.getUserByEmail(email, function (err, rows) {
-                    if (err)
-                        return done(err);
-                    if (rows.length) {
-                        return done(null, false, req.flash('signupMessage', 'Email này đã tồn tại'));
-                    } else {
-                        // if there is no user with that username
-                        // create the user
-                        var newUser = {
-                            email: email,
-                            phoneNumber : phoneNumber,
-                            password: password
-                        };
-                        users.setUserToDatabase(newUser, function (err, id) {
-                            newUser.user_id = id;
+                users.getUserByEmail(email, function (err, rowEmail) {
+                    users.getUserByPhoneNumber(phoneNumber, function (err, rowPhone) {
+                        if (err)
+                            return done(err);
+                        if (rowEmail.length ||  rowPhone.length) {
+                            return done(null, false, req.flash('signupMessage', 'Email hoặc Phone này đã tồn tại'));
+                        }
+                        else
+                            {
+                                // if there is no user with that username
+                                // create the user
+                                var newUser = {
+                                    email: email,
+                                    phoneNumber: phoneNumber,
+                                    password: password
+                                };
 
-                            return done(null, newUser);
-                        });
-                    }
+                                users.setUserToDatabase(newUser, function (err, id) {
+                                    newUser.user_id = id;
+                                    return done(null, newUser);
+                                });
+                            }
+                    });
                 });
             })
     );

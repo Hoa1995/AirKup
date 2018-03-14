@@ -76,12 +76,19 @@
                         <h3 class="text-center panel-title"><i class="fa fa-image fa-fw"></i> <b>Thêm Danh Mục</b></h3>
                     </div>
                     <div class="panel-body">
-                        <form action="/admin/addCategory" method="post" >
+                        <form action="/admin/addCategory" method="post" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label>Tên Danh Mục</label>
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-header fa-fw"></i></span>
                                     <input type="text" class="form-control" name="category" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Ảnh Thể Loại Sách</label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-image fa-fw"></i></span>
+                                    <input type="file" class="form-control"   name="photo_category"  required>
                                 </div>
                             </div>
                             <input type="text" name="userID" value="<%= user.user_id%>" hidden>

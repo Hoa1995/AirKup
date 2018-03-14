@@ -55,7 +55,7 @@ const SERVER_SECRET = 'Airhuby_Book';
 
 // required for passport
 app.use(session({
-    secret: 'Airhuby_Book',
+    secret: 'Airhuby Book',
     resave: true,
     saveUninitialized: true
 
@@ -84,7 +84,8 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 
 // routes
 require('./routes/admin')(app, passport);
-require('./routes/API.js')(app, passport, SERVER_SECRET); // load our routes and pass in our app and fully configured passport
+require('./routes/API_Authentication.js')(app, passport, SERVER_SECRET);
+require('./routes/API_Category_Home.js')(app, passport, SERVER_SECRET); // load our routes and pass in our app and fully configured passport
 
 
 

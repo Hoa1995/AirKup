@@ -1,6 +1,6 @@
-var connection = require('../config/database').connection;
 var multer = require('multer');
-var book = require("../model/book")
+var book = require("../model/book");
+var user = require("../model/user");
 
 
 var path = require('path');
@@ -90,7 +90,10 @@ module.exports = function (app,passport) {
 
                  console.log(newBook);
                 book.setBookToDatabase(newBook,function (err) {
-                    console.log("Them sach thanh cong!")
+                    user.increaseBook(newBook.user_id,function () {
+                        console.log("Them sach thanh cong!")
+                    });
+
                 });
 
             });
@@ -109,13 +112,14 @@ module.exports = function (app,passport) {
             res.render('./admin/addCategory', {user: req.user});
         }
     });
-    app.post("/admin/addCategory", function (req, res) {
+    app.post("/admin/addCategory",multer({storage: storage}).single("photo_category"), function (req, res) {
         if (req.isAuthenticated()) {
                 var newCategory = {
                     category: req.body.category,
+                    photo_category : "/upload/" + req.file.filename,
                     user_id: req.user.user_id
                 };
-                console.log(newCategory);
+
                 book.setCategoryToDatabase(newCategory,function (err) {
                     console.log("Them danh muc thanh cong!")
                 });
@@ -123,16 +127,7 @@ module.exports = function (app,passport) {
 
         }
     });
-    app.get('/api/books', function(req, res, next) {
 
-            book.getBook(function (category_arr) {
-                  //
-
-                res.send(category_arr);
-                // return;
-            });
-
-            });
     // app.get('/api/books/category/:id', function(req, res, next) {
     //     book.getCategory(id,function (err,categories) {
     //         book.getBook(id,function (err,books) {
